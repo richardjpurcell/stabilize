@@ -1,3 +1,5 @@
 # Untracked files:
 *.MOV
 *.png
+/build
+/.vscode
