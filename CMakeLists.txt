@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(appName "stabilize")
+set(appName "boundBoxTest")
 set(myAppName ${appName} )
 string(APPEND myAppName ".cpp")
 project( ${appName} )
