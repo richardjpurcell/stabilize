@@ -1,8 +1,7 @@
 #!/bin/bash
 
-cd /media/rpurcell/work/projects/stabilize/build
 cmake ..
 make
 mv stabilize ..
 cd ..
-./stabilize
+./stabilize ./video/IMG_2524/IMG_2524_%04d.png
