@@ -8,6 +8,7 @@
 #include <opencv2/tracking.hpp>
 
 #include <iostream>
+#include <fstream>
 
 using namespace cv;
 using namespace std;
@@ -69,12 +70,16 @@ int main(int argc, char** argv)
     //read first frame
     sequence >> image;
      //define initial bounding box
-    Rect2d bbox(204, 131, 97, 222);
-    //display bounding box
-    rectangle(image, bbox, Scalar(255, 0, 0), 2, 1);
-    //imshow("Image | q or esc to quit", image);
+    Rect2d bbox = selectROI("image | q or esc to quit", image, false, false);
     //initialize tracker
     tracker->init(image, bbox);
+    //open coordinates file
+    ofstream outfile ("coordinates.txt");
+    //write coordinates
+    outfile << setfill('0') << setw(4) << (int)bbox.x << " ";
+    outfile << setfill('0') << setw(4) << (int)bbox.y << " ";
+    outfile << setfill('0') << setw(4) << (int)bbox.height << " ";
+    outfile << setfill('0') << setw(4) << (int)bbox.width << endl;
 
     for(;;)
     {
@@ -92,6 +97,11 @@ int main(int argc, char** argv)
         {
             //tracking success, draw the tracked object
             rectangle(image, bbox, Scalar(255, 0, 0), 2, 1);
+            //write coordinates
+            outfile << setfill('0') << setw(4) << (int)bbox.x << " ";
+            outfile << setfill('0') << setw(4) << (int)bbox.y << " ";
+            outfile << setfill('0') << setw(4) << (int)bbox.height << " ";
+            outfile << setfill('0') << setw(4) << (int)bbox.width << endl;
         }
         else
         {
@@ -105,6 +115,9 @@ int main(int argc, char** argv)
         if(key == 'q' || key == 'Q' || key == 27)
             break;
     }
+
+    outfile << '~' << endl;
+    outfile.close();
 
     return 0;
 }
