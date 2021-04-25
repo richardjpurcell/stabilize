@@ -41,10 +41,11 @@ int main(int argc, char** argv)
 
     string arg1 = argv[1];
     string arg2 = argv[2];
-    string origPath = "./shots/orig_" + arg1 + "/orig_" + argv[1] + ".0001.png";
+    string origPath = "./shots/shot_" + arg1 + "/orig_" + arg1 + "/orig_" + arg1 + ".0001.png";
+    string ofstPath = "./shots/shot_" + arg1 + "/ofst_" + arg1 + ".txt";
 
     cout << origPath << endl;
-    cout << arg2 << endl;
+    cout << ofstPath << endl;
 
     return 0;
 }

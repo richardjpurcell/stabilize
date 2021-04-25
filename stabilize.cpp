@@ -1,6 +1,6 @@
 /*
 *  stabilize.cpp
-*  -read a sequence of images
+*  -read a sequence of images and output a list of offsets
 *
 */
 
@@ -15,27 +15,39 @@ using namespace std;
 
 void help(char** argv)
 {
-    cout << "\nRead a sequence of images.\n"
+    cout << "\nRead a sequence of images and process.\n"
+         << "Assuming original files are stored in ./shots/shot_<shotNumber>/orig_<shotNumber>/\n"
+         << "Assuming original files are named orig_<shotNumber>.%04d.png\n"
+         << "Operation 1: track and create offset file. <track>\n"
+         << "Operation 2: stabilize original and output new sequence. <stabilize>\n"
+         << "Operation 3: de-stabilize overlay. <destabilize>\n"
          << "Usage: " 
          << argv[0]
-         << " <path to first image in sequence\n"
+         << " <shot number>"
+         << " <shot length>"
+         << " <operation name>\n"
          << "example: " 
          << argv[0] 
-         << " right%%02d.jpg\n"
+         << " 2524 track\n"
          << "q, Q, esc -- quit\n"
          << endl;
 }
 
 int main(int argc, char** argv)
 {
-    if(argc != 2)
+    if(argc != 4)
     {
         help(argv);
         return 1;
     }
 
-    string arg = argv[1];
-    VideoCapture sequence(arg);
+    string shotNumber = argv[1];
+    int shotLength = atoi(argv[2]);
+    string opType = argv[3];
+    string origPath = "./shots/shot_" + shotNumber + "/orig_" + shotNumber + "/orig_" + shotNumber + ".%04d.png";
+    string ofstPath = "./shots/shot_" + shotNumber + "/ofst_" + shotNumber + ".txt";
+
+    VideoCapture sequence(origPath);
     string trackerTypes[4] = {"CSRT", "MEDIANFLOW", "MOSSE", "KCF"};
     //create tracker
     string trackerType = trackerTypes[0];
@@ -65,16 +77,17 @@ int main(int argc, char** argv)
     }
 
     Mat image;
-    //namedWindow("Image | q or esc to quit", WINDOW_NORMAL);
-
     //read first frame
     sequence >> image;
-     //define initial bounding box
+    //window
+    namedWindow("image | q or esc to quit", WINDOW_NORMAL);
+    resizeWindow("image | q or esc to quit", image.cols/2, image.rows/2);
+    //user defines initial bounding box
     Rect2d bbox = selectROI("image | q or esc to quit", image, false, false);
     //initialize tracker
     tracker->init(image, bbox);
     //open coordinates file
-    ofstream outfile ("coordinates.txt");
+    ofstream outfile (ofstPath);
     //write coordinates
     outfile << setfill('0') << setw(4) << (int)bbox.x << " ";
     outfile << setfill('0') << setw(4) << (int)bbox.y << " ";
