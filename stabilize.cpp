@@ -28,7 +28,7 @@ void help(char** argv)
          << " <operation name>\n"
          << "example: " 
          << argv[0] 
-         << " 2524 track\n"
+         << " 2524 226 track\n"
          << "q, Q, esc -- quit\n"
          << endl;
 }
@@ -93,12 +93,21 @@ int main(int argc, char** argv)
     outfile << setfill('0') << setw(4) << (int)bbox.y << " ";
     outfile << setfill('0') << setw(4) << (int)bbox.height << " ";
     outfile << setfill('0') << setw(4) << (int)bbox.width << endl;
+    //progress bar
+    int barWidth = 70;
+    int counter = 1;
+    float progress = 0.0;
+    int pos = 0;
+    float progressIncrement = ((float)barWidth/shotLength);
 
     for(;;)
     {
         sequence >> image;
+        counter += 1;
         if(image.empty())
-        {
+        { 
+            //finish progress bar
+            cout << endl;
             cout << "End of Sequence" << endl;
             break;
         }
@@ -127,8 +136,24 @@ int main(int argc, char** argv)
         char key = (char)waitKey(500);
         if(key == 'q' || key == 'Q' || key == 27)
             break;
-    }
 
+        cout << "[";
+        pos = progress;
+        //cout << pos << endl;
+
+        for (int i = 0; i < barWidth; ++i)
+        {
+            if (i < pos) cout << "=";
+            else if (i == pos) cout << ">";
+            else cout << " ";
+        }
+
+        cout << "] " << int((progress * 100)/barWidth) << "% <frame " << counter << ">\r";
+        cout.flush();
+
+        progress += progressIncrement;
+    }
+    //finish outfile
     outfile << '~' << endl;
     outfile.close();
 
