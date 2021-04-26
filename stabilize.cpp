@@ -1,8 +1,13 @@
 /*
-*  stabilize.cpp
-*  -read a sequence of images and output a list of offsets
-*
-*/
+ * File:      stabilize.cpp
+ * Author:    Richard Purcell
+ * Date:      2021-04-27
+ * Version:   1.0
+ * Purpose:   Given an image, track, stabilize, or destabilize.
+ * Usage:     $ ./stabilize <shot number> <shot length>
+ * Notes:     none
+ */
+
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/tracking.hpp>
@@ -13,6 +18,17 @@
 using namespace cv;
 using namespace std;
 
+/*
+ * Name:         help
+ * Purpose:      provide help notes to user
+ * Arguments:    argv
+ * Outputs:      none
+ * Modifies:     none
+ * Returns:      none
+ * Assumptions:  none
+ * Bugs:         ?
+ * Notes:        none
+ */
 void help(char** argv)
 {
     cout << "\nRead a sequence of images and process.\n"
@@ -33,20 +49,19 @@ void help(char** argv)
          << endl;
 }
 
-int main(int argc, char** argv)
+/*
+ * Name:         track
+ * Purpose:      select and track image area
+ * Arguments:    origPath, ofstPath, shotLength
+ * Outputs:      int
+ * Modifies:     none
+ * Returns:      none
+ * Assumptions:  none
+ * Bugs:         ?
+ * Notes:        none
+ */
+int track(string origPath, string ofstPath, int shotLength)
 {
-    if(argc != 4)
-    {
-        help(argv);
-        return 1;
-    }
-
-    string shotNumber = argv[1];
-    int shotLength = atoi(argv[2]);
-    string opType = argv[3];
-    string origPath = "./shots/shot_" + shotNumber + "/orig_" + shotNumber + "/orig_" + shotNumber + ".%04d.png";
-    string ofstPath = "./shots/shot_" + shotNumber + "/ofst_" + shotNumber + ".txt";
-
     VideoCapture sequence(origPath);
     string trackerTypes[4] = {"CSRT", "MEDIANFLOW", "MOSSE", "KCF"};
     //create tracker
@@ -157,5 +172,71 @@ int main(int argc, char** argv)
     outfile << '~' << endl;
     outfile.close();
 
+    return 0;
+
+}
+
+/*
+ * Name:         stabilize
+ * Purpose:      stabilize an image sequence
+ * Arguments:    origPath, ofstPath, shotLength
+ * Outputs:      int
+ * Modifies:     none
+ * Returns:      none
+ * Assumptions:  none
+ * Bugs:         ?
+ * Notes:        none
+ */
+int stabilize()
+{
+    return 0;
+}
+
+/*
+ * Name:         destabilize
+ * Purpose:      destabilize an image sequence
+ * Arguments:    origPath, ofstPath, shotLength
+ * Outputs:      int
+ * Modifies:     none
+ * Returns:      none
+ * Assumptions:  none
+ * Bugs:         ?
+ * Notes:        none
+ */
+int destabilize()
+{
+    return 0;
+}
+
+int main(int argc, char** argv)
+{
+    if(argc != 4)
+    {
+        help(argv);
+        return 1;
+    }
+
+    string shotNumber = argv[1];
+    int shotLength = atoi(argv[2]);
+    string opType = argv[3];
+    string origPath = "./shots/shot_" + shotNumber + "/orig_" + shotNumber + "/orig_" + shotNumber + ".%04d.png";
+    string ofstPath = "./shots/shot_" + shotNumber + "/ofst_" + shotNumber + ".txt";
+    string operationTypes[3] = {"track", "stabilize", "destabilize"};
+    string operationType = operationTypes[0];
+
+    if (operationType == "track")
+        track(origPath, ofstPath, shotLength);
+    else if (operationType == "stabilize")
+        stabilize();
+    else if (operationType == "destabilize")
+        destabilize();
+    else
+    {
+        cout << "Invalid operation specified." << endl;
+        cout << "Available operations are: " << endl;
+        for (int i = 0; i < sizeof(operationTypes)/sizeof(operationTypes[0]); i++)
+            cout << i << " : " << operationTypes[i] << endl;
+        return -1;
+    }
     return 0;
 }
